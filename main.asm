@@ -1,29 +1,28 @@
 .include "macros.asm"
+.include "keyboard.asm"
 
 .text
 .globl main
-
+.eqv esc, 27
 
 main: 
 	printStr(hello)
-	printStr(newLine)
+run:
+	# Reading keyboard input
+	li $t0, 0                                  #initialize character to zero
+	GetCharacter($t0, $v0)                     #wait for user to enter in character
+	move $t0, $v0                              #store character in $t0	
+	print($t0)
 	
-	# avoid using t0-t3
-	addi $t4, $0, 100
-	printNum($t4)
-	
-	push $t4
-	pop $t5
-	printNum($t5)
-	
-	peek $t4
-	printNum($t4)
+	li $t1, esc
+	bne $t0, $t1, run
 
+	
 endMain:
-exit
+exit()
 
 .data
-hello: .asciiz "Program running..."
+hello: .asciiz "Program running...\n"
 newLine: .asciiz "\n"
 queue: .word 0		# stores floor (1-5 up, 6-9 down)
 .space 36 			# queue = array of size 9

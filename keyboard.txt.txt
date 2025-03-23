@@ -1,0 +1,40 @@
+
+
+.text
+.globl GetCharacter
+
+.eqv keyboard, 0xffff
+.eqv display, 0xffff000c
+.eqv esc, 27
+
+	
+
+#Is Character There
+#procedure to determine whether a character is present
+#return - $v0 = 0 (no data), $v0 = 1 (character is in the buffer)
+IsCharacterThere:
+	lui $t0, keyboard 	#look at register 0xFFFF0000
+	lw $t1, 0($t0)  	#get control
+	and $v0, $t1, 1 	#determines whether there is a character in the input
+	jr $ra           	#return
+
+#Get Character
+#procedure to poll the keypad and wait for an input character
+#return - $v0 - ASCII character
+GetCharacter:
+	push $ra		#store return address in stack
+	li $v0, 0                                                                      #clear $v0
+	
+	j CharacterCheck
+	
+	GetCharacterLoop:
+		jal IsCharacterThere                                                        #determines whether character is there
+	CharacterCheck:
+		beq $v0, $0, GetCharacterLoop                                             #if no data, try later
+	
+	#char in 0xFFFF0004
+	lui $t0, keyboard                                                               #loading address
+	lw $v0, 4($t0)                                                                #loading next word
+	
+	pop $ra		#readjust stack pointer
+	jr $ra                                                                        #return

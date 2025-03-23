@@ -12,12 +12,6 @@
     syscall
 .end_macro
 
-.macro print($x)
-	li $v0, 11                                                                      #syscall for print character
-	move $a0, $x                                                                #pass in $t0 as argument $a0
-	syscall #print character
-.end_macro 
-
 .macro push %rx
     addi $sp, $sp ,-4
     sw %rx ,0($sp)
@@ -38,9 +32,8 @@
 	lw %rx 0($t2)
 .end_macro
 
-.macro exit()
+.macro exit
 	# Exit the program
     li $v0, 10
     syscall
 .end_macro
-
