@@ -5,6 +5,7 @@
 ```asm
 fx:
   add $t0, $0, $t1
+  ...
 endFx:
 jr $ra
 ```
@@ -24,7 +25,10 @@ endMain:
 4. Pushing and poping to stack, check `macro.asm`
 ```asm
 main:
+  ...
+  push $ra
+  ...
   pop $ra
-  pop $ra
+  ...
 endMain:
 ```
