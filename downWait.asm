@@ -12,7 +12,7 @@ maxReached: .asciiz "Max size has been reached. Cannot accept more input."
 #dummyLoop:
 #li $a1, 7
 
-#Input(values 1-5) = $a1, Address of array/queue = $a0
+#Input(values 6-9) = $a1, Address of array/queue = $a0
 downWait:
 	li $s0, 0 #Initialize i = 0
 

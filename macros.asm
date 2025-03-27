@@ -44,3 +44,11 @@
     syscall
 .end_macro
 
+
+.macro addToUnsorted(%queue, %queueSize)
+	la $a0, %queue
+	move $a1, $t0
+	la $a2, %queueSize
+	upWait
+
+.end_macro 
