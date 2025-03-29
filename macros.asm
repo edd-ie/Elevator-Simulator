@@ -44,11 +44,62 @@
     syscall
 .end_macro
 
+.macro animation(%emergencyPressed, %systemReset)
+    # Print emergency message
+    printStr(%emergencyPressed)
 
-.macro addToUnsorted(%queue, %queueSize)
-	la $a0, %queue
-	move $a1, $t0
-	la $a2, %queueSize
-	upWait
+    # Initialize loading bar
+    printStr(%systemReset)
 
-.end_macro 
+    # Loading bar animation
+    li $s2, 0          # Counter for loading bar
+    li $s3, 20         # Length of loading bar
+    li $s4, '='        # Character to fill the loading bar
+
+load_loop:
+    # Print loading bar progress
+    printStr(%systemReset)
+
+    # Update loading bar
+    la $t2, %systemReset
+    addi $t2, $t2, 19  # Position to start filling the bar
+    add $t2, $t2, $s2  # Move to the next position
+    sb $s4, 0($t2)     # Fill with '=' character
+
+    # Increment counter
+    addi $s2, $s2, 1
+
+    # Delay for animation effect using a loop
+    li $t4, 20000     # Set delay counter
+	delay_loop:
+    	subi $t4, $t4, 1
+    	bnez $t4, delay_loop
+
+  	# Check if loading bar is complete
+    bne $s2, $s3, load_loop
+
+    # Print completion message
+    printStr(%systemReset)
+    
+    # Loading bar animation
+    li $s2, 0          # Counter for loading bar
+    li $s3, 20         # Length of loading bar
+    li $s4, ' '        # Character to fill the loading bar
+    
+    # Update loading bar
+    la $t2, %systemReset
+    addi $t2, $t2, 19  # Position to start filling the bar
+    
+	clear_loop:
+    
+    add $t5, $t2, $s2  # Move to the next position
+    sb $s4, 0($t5)     # Fill with '=' character
+
+    # Increment counter
+    addi $s2, $s2, 1
+
+    # Check if loading bar is complete
+    bne $s2, $s3, clear_loop
+.end_macro
+
+

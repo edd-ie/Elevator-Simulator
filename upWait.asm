@@ -1,44 +1,61 @@
+.macro addQueue(%queue, $value, %queueSize, $signal)
+	la $a0, %queue
+	move $a1, $value
+	addi $a1, $a1, -48
+	la $a2, %queueSize
+	
+	
+	beqz $signal, skipAdd	
+	upWait(floorDownQueue)
+	b exitAddToQueue
+	
+	skipAdd:
+	upWait(floorUpQueue)
+	
+exitAddToQueue:
+.end_macro 
 
-
-#Prompt for printing queue
-#test: .asciiz "\nElement: "
-
-#Loading dummy queue into $a0 for testing
-#la $a0, queue
-
-#Dummy loop and sample input for testing code
-#dummyLoop:
-#li $a1, 7
+.macro reset(%queue, %queueSize)
+	# count = 0
+	la $t1, %queueSize	 
+	sw $0, 0($t1)
+	
+	# Queue = []
+	li $t0, 16
+	la $t1, %queue	
+	add $t2, $t1, $t0
+	
+	erase:
+	addi $t1, $t1, 4
+	sw $zero, 0($t1)
+	bne $t1, $t2, erase
+	
+.end_macro 
 
 #Input(values 1-5) = $a1, Address of array/queue = $a0
-.macro upWait
+.macro upWait(%floor)
 	li $s0, 0 #Initialize i = 0
 
 #Loop until we find an empty spot to insert (aka if value is 0) OR if we reach the max size (10)
 loop1:
-	slti $t0, $s0, 5			#Shift if i < 10
-	beq $t0, $zero, maxSizeReached		#Branch if i >= 10
-	sll $t1, $s0, 2 			#i * 4 (offset for array)
-	add $t2, $a0, $t1 			#Increase array pointer by offset
-	lw $t3, 0($t2) 				#load array[i]
-	beq $t3, $a1, exists
-	beqz $t3, enqueue			#if array[i]= 0, insert input here
-	addi $s0, $s0, 1			#i += 1
-	j loop1
+	location:
+	sll $t1, $a1, 2
+	add $t3, $a0, $t1 	# array[value]
+	
+	
+	
+	checkData:
+	lw $t2, 0($t3)
+	beq $t2, $a1, exists
 
-#If max size is reached, exit
-maxSizeReached:
-	#jal printQueue
-	printStr(maxReached)
-	li $v1, 0
-	j exit2
 
 #Insert input
 enqueue:
 	#Store input in array[i]
-	sw $a1, 0($t2)
+	sw $a1, 0($t3)
+	addi $a1, $a1, 48
 	print($a1)
-	printStr(floorToQueue)
+	printStr(%floor)
 	
 	# Increase array counter
 	lw $t2, 0($a2)
@@ -85,4 +102,5 @@ exit2:
 #queue: .word 10, 0, 0, 0, 0, 0, 0, 0, 0, 0
 maxReached: .asciiz "Floor queue filled. Cannot accept more input.\n"
 alreadyPressed: .asciiz "Floor already pressed!\n"
-floorToQueue: .asciiz " <- added to floor queue\n"
+floorUpQueue: .asciiz " floor - Up\n"
+floorDownQueue: .asciiz " floor - Down\n"
