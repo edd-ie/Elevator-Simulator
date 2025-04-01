@@ -70,10 +70,10 @@ load_loop:
     addi $s2, $s2, 1
 
     # Delay for animation effect using a loop
-    li $t4, 20000     # Set delay counter
-	delay_loop:
-    	subi $t4, $t4, 1
-    	bnez $t4, delay_loop
+    #li $t4, 1000     # Set delay counter
+	#delay_loop:
+    	#subi $t4, $t4, 1
+    	#bnez $t4, delay_loop
 
   	# Check if loading bar is complete
     bne $s2, $s3, load_loop

@@ -42,8 +42,6 @@ loop1:
 	sll $t1, $a1, 2
 	add $t3, $a0, $t1 	# array[value]
 	
-	
-	
 	checkData:
 	lw $t2, 0($t3)
 	beq $t2, $a1, exists
@@ -102,5 +100,5 @@ exit2:
 #queue: .word 10, 0, 0, 0, 0, 0, 0, 0, 0, 0
 maxReached: .asciiz "Floor queue filled. Cannot accept more input.\n"
 alreadyPressed: .asciiz "Floor already pressed!\n"
-floorUpQueue: .asciiz " floor - Up\n"
-floorDownQueue: .asciiz " floor - Down\n"
+floorUpQueue: .asciiz " : floor(Up)\n"
+floorDownQueue: .asciiz " floor(Down)\n"
