@@ -5,24 +5,15 @@
 .text
 .globl main
 .eqv esc, 27
-.eqv clk, 150000
 
 
 main: 
 	printStr(hello)
 	reset(upQueue, sizeUp)
 	reset(downQueue,sizeDown)
-	li $s7, clk
 	
 run:
-    #change floors
-    addi $s7, $s7, -1
-    bnez $s7, continue
-    	jal floorManager
-    	li $s7, clk
-    	b run
-	
-	continue:
+
 	# Reading keyboard input
 	li $t0, 0                                  #initialize character to zero
 	GetCharacter($t0, $v0)                     #wait for user to enter in character	
@@ -35,7 +26,6 @@ run:
 	li $t6, 'q'
 	
 	
-    
     
 	# Ignore unwanted inputs
 	beq $t0, $t6, emergency
@@ -64,8 +54,6 @@ run:
 	j Skip
 	
 	emergency:
-		sw $0, direction($0)
-		sw $0, floor($0)
 		reset(upQueue, sizeUp)
 		reset(downQueue,sizeDown)
 		animation(emergencyPressed, systemReset)
@@ -81,7 +69,7 @@ endMain:
 exit()
 
 
-## Fix down Logic
+
 floorManager:
 	lw $t0, direction($0)
 	lw $t1, sizeUp($0)
@@ -93,106 +81,63 @@ floorManager:
 	
 	goingUp:
 		lw $t3, floor($0)
-		
-		logicUp:
-		beq $t3, 4, checkDown
-		 
-		sll $t3, $t3, 2
-		la $t4, upQueue
-		add $t4, $t4, $t3
-
-		lw $t5, 0($t4)
-		sw $0, 0($t4)
-		beqz $t5, skipUpFloor
-		sw $t5 floor($0)
-		addi $t1, $t1, -1
-		sw $t1, sizeUp($0)		
-	j endManager
-	
-	skipUpFloor:
-		lw $t3, floor($0)
-		addi $t3, $t3, 1
-	j logicUp
-	
-	checkDown:
-		sw $t3, floor($0)
-		li $t3, 2
-		sw $t3, direction($0)
-		reset(upQueue, sizeUp)
-
-		bnez $t2, endManager
-		
-		sw $0, direction($0)
-		sw $0, floor($0)		
-		reset(downQueue,sizeDown)
-	j endManager
-	
-	goingDown:
-		lw $t3, floor($0)
-		addi $t3, $t3 -1
-		
-		logicDwn:
-		# add if t3 = 0, move up
-		beqz $t3, checkUp
-		
+		# add if t3 = 4, move down, 
 		sll $t3, $t3, 2
 		la $t4, upQueue
 		add $t4, $t4, $t3
 
 		lw $t5, 0($t4)
 		# add if t5 = 0, skip floor
-		beqz $t5, skipDownFloor
-		
 		sw $0, 0($t4)
 		sw $t5 floor($0)
 		addi $t1, $t1, -1
-		sw $t1, sizeDown($0)
+		sw $t1, sizeUp($0)		
 	j endManager
 	
-	skipDownFloor:
-		srl $t3, $t3, 2
+	
+	goingDown:
+		lw $t3, floor($0)
 		addi $t3, $t3 -1
-	j logicDwn
-	
-	checkUp:
-		li $t3, 1
-		sw $t3, direction($0)
-		reset(downQueue, sizeDown)
-		bnez $t1, endManager
-		sw $0, direction($0)
-		sw $0, floor($0)
-		reset(upQueue, sizeUp)
+		# add if t3 = 0, move up
+		sll $t3, $t3, 2
+		la $t4, upQueue
+		add $t4, $t4, $t3
+
+		lw $t5, 0($t4)
+		# add if t5 = 0, skip floor
+		sw $0, 0($t4)
+		sw $t5 floor($0)
+		addi $t1, $t1, -1
+		sw $t1, sizeUp($0)
 	j endManager
-		
+	
 	
 	stopped:		
 		blt $t1, $t2, moveDown
 		
 		moveUp:
-			# get queue[i]
 			lw $t3, upQueue($0)
-			sw $0, upQueue($0)
-			
-			#update current floor	
+			sw $t0, upQueue($0)
+			addi $t3, $t3, 1
 			sw $t3, floor($0)
-			#addi $t1, $t1, -1
-			#sw $t1, sizeUp($0)
+			addi $t1, $t1, -1
+			sw $t1, sizeUp($0)
 			li $t4, 1
 			sw $t4, direction($0)
 		j endManager
 		
 		moveDown:
-			# get queue[end]
-			li $t5, 4
-			sw $t5, floor($0)
-			
+			la $t3, downQueue
+			addi $t4, $t3, 12
+			lw $t3, 0($t4)
+			sw $t0, 0($t4)
+			sw $t3, floor($0)
+			addi $t1, $t1, -1
+			sw $t1, sizeDown($0)
 			li $t4, 2
 			sw $t4, direction($0)
 
 endManager:
-	printStr(trackFloor)
-	lw $t8, floor($0)
-	printNum($t8)
 jr $ra
 
 
@@ -207,7 +152,7 @@ timeD:
 	li $t3, 1000
 	divu $s1, $s1, $t3
     # Print the message
-    #printStr(time)
+    printStr(time)
 	
 	printNum($s1)
 	
@@ -223,7 +168,7 @@ timeD:
 	li $t3, 1000
 	divu $s2, $s2, $t3
     # Print the message
-    #printStr(time)
+    printStr(time)
 	
 	sub $s2, $s2, $s1
 	printNum($s2)
@@ -247,7 +192,7 @@ sizeDown: .word 0 	# current quesize
 
 direction: .word 0  # 0 = stoped, 1 = up, 2 = down
 floor: .word 0 		# current floor
-trackFloor: .asciiz "Current floor: "
+time: .asciiz "Current time: "
 
 emergencyPressed: .asciiz "\nThe emergency button was pressed\nStay calm...Help is on the way\n\n"
 systemReset: .asciiz "System resetting: [                    ]\n"

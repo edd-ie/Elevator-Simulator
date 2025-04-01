@@ -93,7 +93,7 @@ load_loop:
 	clear_loop:
     
     add $t5, $t2, $s2  # Move to the next position
-    sb $s4, 0($t5)     # Fill with '=' character
+    sb $s4, 0($t5)     # Fill with ' ' character
 
     # Increment counter
     addi $s2, $s2, 1
@@ -101,5 +101,3 @@ load_loop:
     # Check if loading bar is complete
     bne $s2, $s3, clear_loop
 .end_macro
-
-

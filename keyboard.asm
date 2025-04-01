@@ -17,9 +17,10 @@
 	
 	GetCharacterLoop:
 		IsCharacterThere($x, $y)                                                         #determines whether character is there
-		beq $y, $0, GetCharacterLoop                                             #if no data, try later
+		beq $y, $0, exitGetChar                                             #if no data, try later
 
 	#char in 0xFFFF0004
 	lui $x, keyboard                                                               #loading address
 	lw $y, 4($x)                                                             #loading next word
+exitGetChar:
 .end_macro
