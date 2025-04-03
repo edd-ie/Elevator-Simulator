@@ -1,6 +1,6 @@
 # Elevator simulator
 ## run time speed
-<span type="color:red">Important</span> - change run speed slider on top left of MARS simulator to 30inst/sec
+<span style="color: red;">Important</span> - change run speed slider on top left of MARS simulator to 30inst/sec
 ## Connecting to the keyboard
 
 1. Click on `tools` on top menu bar
