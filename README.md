@@ -2,8 +2,11 @@
 
 ## Key bindings
 `1-4` = floor requests, moving up
+
 `5-8` = floor requests, moving down (5 = floor 1, 8 = floor 4)
+
 `q` = Emergency alert
+
 `esc` = Exit the program
 
 ## Connecting to the keyboard
