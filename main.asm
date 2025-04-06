@@ -2,6 +2,25 @@
 .include "keyboard.asm"
 .include "queue.asm"
 
+################################################################
+# Setup
+################################################################
+# Click tools
+# Select keyboard and display MMIO Simulator
+# At bottom Click connect to MIPS
+# Compile the code
+# Set run speed at top right = 30inst/sec
+# Run program
+
+################################################################
+# Key bindings
+################################################################
+# 1-4 = floor requests, moving up
+# 5-8 = floor requests, moving down (5 = floor 1, 8 = floor 4)
+# q = Emergency alert
+# esc = Exit the program
+################################################################
+
 .text
 .globl main
 .eqv esc, 27
@@ -14,8 +33,6 @@ main:
 	printStr(hello)
 	reset(upQueue, sizeUp)
 	reset(downQueue,sizeDown)
-	
-
 	
 run:
 	addi $s6, $s6, -1
